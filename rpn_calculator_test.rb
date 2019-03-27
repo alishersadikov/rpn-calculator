@@ -1,5 +1,5 @@
-require 'minitest/autorun'
 require_relative 'rpn_calculator'
+require 'minitest/autorun'
 require 'pry'
 
 class RpnCalculatorTest < Minitest::Test
@@ -25,4 +25,12 @@ class RpnCalculatorTest < Minitest::Test
       refute RpnCalculator.valid_operand?(operator)
     end
   end
+
+  def test_two_operand_one_operator_expression_evaluation
+    assert_equal 13.0, RpnCalculator.evaluate('5 8 +')
+    assert_equal -3.0, RpnCalculator.evaluate('5 8 -')
+    assert_equal 6.0, RpnCalculator.evaluate('-3 -2 *')
+    assert_equal 1.5, RpnCalculator.evaluate('-3 -2 /')
+  end
+
 end

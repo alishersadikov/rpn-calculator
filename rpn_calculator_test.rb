@@ -52,4 +52,28 @@ class RpnCalculatorTest < Minitest::Test
     assert_equal 11.0, RpnCalculator.evaluate('12 15 * 5 3 / 11 14 + 26 -')
     assert_equal 1.0, RpnCalculator.evaluate('-1 2 3 4 5 6 * -12 -15 / 2 5 + 3 /')
   end
+
+  def test_invalid_expression
+    ['+', '', nil].each do |invalid_expression|
+      assert_raises InvalidExpressionError do
+        RpnCalculator.evaluate(invalid_expression)
+      end
+    end
+  end
+
+  def test_invalid_number_of_operands
+    ['5 + 8', '+ 5 8', '5 + 6 -'].each do |invalid_expression|
+      assert_raises InvalidArityError do
+         RpnCalculator.evaluate(invalid_expression)
+      end
+    end
+  end
+
+  def test_invalid_number_of_operands
+    ['5 8 !', '5 8 &', '5 8 %'].each do |invalid_expression|
+      assert_raises ExpressionParseError do
+         RpnCalculator.evaluate(invalid_expression)
+      end
+    end
+  end
 end

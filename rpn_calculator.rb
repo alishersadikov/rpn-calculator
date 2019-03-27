@@ -21,8 +21,7 @@ module RpnCalculator
       if valid_operand?(item)
         stack.push(item.to_f)
       elsif valid_operator?(item)
-        operand_1, operand_2 = stack.pop(2)
-        stack.push(operand_1.send(item, operand_2))
+        stack = [stack.reduce(item)]
       end
     end
 

@@ -1,40 +1,47 @@
-module RpnCalculator
-  extend self
+class RpnCalculator
+  OPERATORS = %w[ + - * / ]
 
-  def operators
-    %w[ + - * / ]
+  def initialize(expression)
+    @expression = expression
+    @stack = []
   end
 
   def valid_operator?(value)
-    operators.include?(value)
+    OPERATORS.include?(value)
   end
 
   def valid_operand?(value)
     /\A[+-]?\d+(\.[\d]+)?\z/.match(value)
   end
 
-  def evaluate(expression)
-    raise InvalidExpressionError if expression.nil? || expression.length < 3
+  def evaluate
+    validate_expression!
 
-    stack = []
-
-    expression.split.each do |item|
-
-      if valid_operand?(item)
-        stack.push(item.to_f)
-      elsif valid_operator?(item)
-        raise InvalidArityError if stack.size < 2
-        stack = [stack.reduce(item)]
-      else
-        raise ExpressionParseError
-      end
-
+    @expression.split.each do |item|
+      next @stack.push(item.to_f) if valid_operand?(item)
+      next compress_stack(item)   if valid_operator?(item)
+      raise ParseError
     end
 
-    stack.last
+    solution
+  end
+
+  private
+
+  def compress_stack(operator)
+    raise InvalidArityError if @stack.size < 2
+    @stack = [@stack.reduce(operator)]
+  end
+
+  def validate_expression!
+    raise InvalidExpressionError if @expression.nil? || @expression.length < 3
+  end
+
+  def solution
+    @stack.last
   end
 end
 
 class InvalidExpressionError < StandardError; end
 class InvalidArityError < StandardError; end
-class ExpressionParseError < StandardError; end
+class ParseError < StandardError; end

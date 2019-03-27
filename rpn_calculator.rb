@@ -1,7 +1,15 @@
 module RpnCalculator
   extend self
 
-  def valid_operators
-    %w[ + - * /]
+  def operators
+    %w[ + - * / ]
+  end
+
+  def valid_operator?(value)
+    operators.include?(value)
+  end
+
+  def valid_operand?(value)
+    /\A[+-]?\d+(\.[\d]+)?\z/.match(value)
   end
 end

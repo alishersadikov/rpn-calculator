@@ -1,20 +1,27 @@
 require_relative 'rpn_calculator'
 
-puts "Welcome to RPN Calculator REPL!"
+puts "Welcome to the RPN Calculator REPL!"
+puts "Enter c to calculate or q to quit."
+puts "Enter the expression one element at a time or the whole expression:"
+
 @expression = []
 
 def handle_input(input)
-  puts (" => #{input}")
-  @expression << input
-
-  puts parse if RpnCalculator::OPERATORS.include?(input)
+  if input == 'c'
+    return puts (" => #{evaluate!}")
+  else
+    puts (" => #{input}")
+    @expression << input
+  end
 end
 
-def parse
-  RpnCalculator.new(@expression.join(' ')).evaluate
+def evaluate!
+  result = RpnCalculator.new(@expression.join(' ')).evaluate.to_s
+  @expression = []
+  result
 rescue => e
   @expression = []
-  e.message # STDERR output also makes sense here
+  e.message
 end
 
 loop do

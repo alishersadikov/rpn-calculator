@@ -1,5 +1,5 @@
 class RpnCalculator
-  OPERATORS = %w[ + - * / ]
+  OPERATORS = %w[ + - * / % ** ]
 
   def initialize(expression)
     @expression = expression

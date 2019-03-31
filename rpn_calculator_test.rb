@@ -7,9 +7,11 @@ class RpnCalculatorTest < Minitest::Test
   end
 
   def test_valid_operators
-    assert_equal %w[ + - * / ], RpnCalculator::OPERATORS
-    assert rpn('5 8 +').valid_operator?('+')
-    refute rpn('5 8 **').valid_operator?('**')
+    assert_equal %w[ + - * / % ** ], RpnCalculator::OPERATORS
+
+    %w[ + - * / % ** ].each do |operator|
+      assert rpn("5 8 #{operator}").valid_operator?(operator)
+    end
   end
 
   def test_valid_operands
@@ -34,6 +36,8 @@ class RpnCalculatorTest < Minitest::Test
     assert_equal -3.0, rpn('5 8 -').evaluate
     assert_equal 6.0, rpn('-3 -2 *').evaluate
     assert_equal 1.5, rpn('-3 -2 /').evaluate
+    assert_equal 1.0, rpn('3 2 %').evaluate
+    assert_equal 9.0, rpn('3 2 **').evaluate
   end
 
   def test_three_operand_two_operator_expression_evaluation
@@ -42,20 +46,24 @@ class RpnCalculatorTest < Minitest::Test
     assert_equal 0.625, rpn('5 9 1 - /').evaluate
     assert_equal 2.0, rpn('30 3 5 * /').evaluate
     assert_equal 16.0, rpn('4 12 3 / *').evaluate
+    assert_equal 0.5, rpn('4 2 ** 32 /').evaluate
+    assert_equal 9.0, rpn('9 6 % 3 *').evaluate
   end
 
   def test_multiple_operand_multiple_operator_expression_evaluation
     assert_equal 3.0, rpn('6 6 * 12 / 3 + 2 /').evaluate
     assert_equal 25.0, rpn('12 15 * 5 / 14 + 25 -').evaluate
     assert_equal 4.0, rpn('-12 5 * -15 / 8 + 3 /').evaluate
+    assert_equal -27.0, rpn('7 5 % -8 + 2 / 3 **').evaluate
   end
 
   def test_invalid_expression
-    ['5 9 1 -', '5 9 1 - 8 /', '1 2 3 4 6 * 12 15 / 2 3 + 3 /', '+', '', nil].each do |invalid_expression|
-      assert_raises InvalidExpressionError do
-        rpn(invalid_expression).evaluate
+    ['5 9 1 -', '5 9 1 - 8 /', '1 2 3 4 6 * 12 15 / 2 3 + 3 /', nil]
+      .each do |invalid_expression|
+        assert_raises InvalidExpressionError do
+          rpn(invalid_expression).evaluate
+        end
       end
-    end
   end
 
   def test_invalid_number_of_operands
@@ -67,7 +75,7 @@ class RpnCalculatorTest < Minitest::Test
   end
 
   def test_invalid_input_parse_error
-    ['5 8 !', '5 8 &', '5 8 %'].each do |invalid_expression|
+    ['5 8 !', '5 8 &', '5 8 $'].each do |invalid_expression|
       assert_raises ParseError do
          rpn(invalid_expression).evaluate
       end

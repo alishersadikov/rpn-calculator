@@ -18,8 +18,8 @@ class RpnCalculator
     validate_expression!
 
     @expression.split.each do |item|
-      next @stack.push(item.to_f) if valid_operand?(item)
-      next compress_stack(item)   if valid_operator?(item)
+      next @stack.push(item.to_f)         if valid_operand?(item)
+      next perform_single_operation(item) if valid_operator?(item)
       raise ParseError
     end
 
@@ -28,9 +28,10 @@ class RpnCalculator
 
   private
 
-  def compress_stack(operator)
+  def perform_single_operation(operator)
     raise InvalidArityError if @stack.size < 2
-    @stack = [@stack.reduce(operator)]
+    operand_1, operand_2 = @stack.pop(2)
+    @stack.push(operand_1.send(operator, operand_2))
   end
 
   def validate_expression!
@@ -38,6 +39,7 @@ class RpnCalculator
   end
 
   def solution
+    raise InvalidExpressionError if @stack.size > 1
     @stack.last
   end
 end

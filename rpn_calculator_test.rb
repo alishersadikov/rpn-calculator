@@ -36,28 +36,22 @@ class RpnCalculatorTest < Minitest::Test
     assert_equal 1.5, rpn('-3 -2 /').evaluate
   end
 
-  def test_three_operand_one_operator_expression_evaluation
-    assert_equal -5.0, rpn('5 9 1 -').evaluate
-    assert_equal 15.0, rpn('5 9 1 +').evaluate
-    assert_equal 45.0, rpn('5 9 1 *').evaluate
-    assert_equal 1.0, rpn('6 3 2 /').evaluate
-  end
-
   def test_three_operand_two_operator_expression_evaluation
+    assert_equal 5.0, rpn('3 2 - 5 *').evaluate
     assert_equal 11.0, rpn('-3 -2 * 5 +').evaluate
-    assert_equal -0.625, rpn('5 9 1 - 8 /').evaluate
-    assert_equal 2.0, rpn('2 3 5 * 15 /').evaluate
-    assert_equal 10.0, rpn('12 4 3 / 10 *').evaluate
+    assert_equal 0.625, rpn('5 9 1 - /').evaluate
+    assert_equal 2.0, rpn('30 3 5 * /').evaluate
+    assert_equal 16.0, rpn('4 12 3 / *').evaluate
   end
 
   def test_multiple_operand_multiple_operator_expression_evaluation
-    assert_equal 3.0, rpn('1 2 3 4 5 6 * 12 15 / 2 3 + 3 /').evaluate
-    assert_equal 11.0, rpn('12 15 * 5 3 / 11 14 + 26 -').evaluate
-    assert_equal 1.0, rpn('-1 2 3 4 5 6 * -12 -15 / 2 5 + 3 /').evaluate
+    assert_equal 3.0, rpn('6 6 * 12 / 3 + 2 /').evaluate
+    assert_equal 25.0, rpn('12 15 * 5 / 14 + 25 -').evaluate
+    assert_equal 4.0, rpn('-12 5 * -15 / 8 + 3 /').evaluate
   end
 
   def test_invalid_expression
-    ['+', '', nil].each do |invalid_expression|
+    ['5 9 1 -', '5 9 1 - 8 /', '1 2 3 4 6 * 12 15 / 2 3 + 3 /', '+', '', nil].each do |invalid_expression|
       assert_raises InvalidExpressionError do
         rpn(invalid_expression).evaluate
       end
